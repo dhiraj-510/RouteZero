@@ -1,0 +1,89 @@
+/* =========================================
+   base.css — CSS Variables, Reset, Typography
+   RouteZero — Quantum Waste Route Optimizer
+   ========================================= */
+
+:root {
+  --bg:       #050a0e;
+  --bg2:      #0a1520;
+  --bg3:      #0f1f2e;
+  --card:     #0d1b27;
+  --border:   rgba(0, 200, 150, 0.15);
+  --border2:  rgba(0, 200, 150, 0.3);
+  --accent:   #00c896;
+  --accent2:  #00e5b0;
+  --accent3:  #00ffd0;
+  --amber:    #f5a623;
+  --red:      #ff4757;
+  --blue:     #0099ff;
+  --purple:   #9b59ff;
+  --text:     #e8f5f0;
+  --muted:    #5a8070;
+  --muted2:   #8aaaa0;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --r:  8px;
+  --r2: 12px;
+  --r3: 16px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* Grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 200, 150, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 150, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes toastIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes toastOut {
+  to { transform: translateY(20px); opacity: 0; }
+}
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(245, 166, 35, 0.3); }
+  to   { box-shadow: 0 0 24px rgba(245, 166, 35, 0.6); }
+}

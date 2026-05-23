@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RouteZero — Quantum-Inspired Waste Collection Optimizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+<div class="shell">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-icon">♻</div>
+        <div class="logo-name">Route<span>Zero</span></div>
+      </div>
+      <div class="logo-sub">Quantum Route Optimizer • v2.4</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Operations</div>
+      <div class="nav-item active" data-page="dashboard"><span class="nav-icon">⬡</span> Dashboard</div>
+      <div class="nav-item" data-page="map"><span class="nav-icon">◈</span> Live Map</div>
+      <div class="nav-item" data-page="routes"><span class="nav-icon">⊛</span> Routes</div>
+      <div class="nav-label">Intelligence</div>
+      <div class="nav-item" data-page="optimizer"><span class="nav-icon">⧫</span> Optimizer</div>
+      <div class="nav-item" data-page="analytics"><span class="nav-icon">◎</span> Analytics</div>
+      <div class="nav-label">Fleet</div>
+      <div class="nav-item" data-page="vehicles"><span class="nav-icon">⬟</span> Vehicles</div>
+      <div class="nav-item" data-page="alerts">
+        <span class="nav-icon">◇</span> Alerts
+        <span class="badge-count">3</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="status-pill"><div class="pulse"></div>System Online</div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 id="pageTitle">Operations Dashboard</h1>
+        <p id="pageDesc">Smart Cities Module — Mysuru Zone 4 • Today, <span id="dateStr"></span></p>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-outline" id="addWasteBtn">+ Add Waste Point</button>
+        <button class="btn btn-primary" id="topOptBtn">⚡ Optimize Routes</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="page-dashboard" class="page active">
+        <div class="metrics" id="metricsRow">
+          <div class="metric-card"><div class="metric-label">Routes Optimized</div><div class="metric-value" id="m-routes">0</div><div class="metric-delta up">↑ 3 from yesterday</div></div>
+          <div class="metric-card amber"><div class="metric-label">Fuel Saved (L)</div><div class="metric-value" id="m-fuel">0</div><div class="metric-delta up">↑ 18% efficiency</div></div>
+          <div class="metric-card blue"><div class="metric-label">CO&#8322; Reduced (kg)</div><div class="metric-value" id="m-co2">0</div><div class="metric-delta up">↑ SDG Target +12%</div></div>
+          <div class="metric-card red"><div class="metric-label">Missed Pickups</div><div class="metric-value" id="m-missed">0</div><div class="metric-delta down">↓ 89% reduction</div></div>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header"><span class="card-title">City Route Map</span><span id="routeCount" style="font-size:11px;color:var(--muted2);">12 active routes</span></div>
+            <div class="card-body" style="padding:12px;">
+              <div class="map-wrap">
+                <canvas id="mapCanvas"></canvas>
+                <div class="map-overlay">
+                  <div class="map-badge"><div class="badge-dot" style="background:var(--accent)"></div>Optimized</div>
+                  <div class="map-badge"><div class="badge-dot" style="background:var(--red)"></div>Overload</div>
+                  <div class="map-badge"><div class="badge-dot" style="background:var(--amber)"></div>In Progress</div>
+                </div>
+                <div class="map-legend">
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Completed zone</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Active vehicle</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>High-fill bin</div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Depot</div>
+                </div>
+                <div class="map-controls">
+                  <button class="map-btn" id="zoomIn">+</button>
+                  <button class="map-btn" id="zoomOut">−</button>
+                  <button class="map-btn" id="resetMap">↺</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="card">
+              <div class="card-header"><span class="card-title">Quantum Stats</span></div>
+              <div class="card-body">
+                <div class="mini-stat"><span class="mini-stat-label">Algorithm</span><span class="mini-stat-value" id="algoNameDash">QAOA</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Iterations</span><span class="mini-stat-value" id="itersDash">847</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Convergence</span><span class="mini-stat-value" id="convDash">99.2%</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Time Saved</span><span class="mini-stat-value" id="timeDash">3.4h</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Distance Cut</span><span class="mini-stat-value" id="distDash">−32%</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Total Nodes</span><span class="mini-stat-value" id="nodesDash">128</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Weekly Efficiency</span></div>
+              <div class="card-body" style="padding:12px 16px;"><div class="chart-wrap"><canvas id="effChart"></canvas></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Active Routes</span><button class="btn btn-outline" style="padding:4px 12px;font-size:12px;" data-goto="routes">View All</button></div>
+            <div class="card-body" style="padding:0;"><table class="routes-table"><thead><tr><th>Route</th><th>Vehicle</th><th>Status</th><th>Fill %</th><th>ETA</th></tr></thead><tbody id="routeTableBody"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Live Alerts</span></div>
+            <div class="card-body" style="padding:12px;"><div class="notif-list" id="alertList"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MAP ── -->
+      <div id="page-map" class="page">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header">
+            <span class="card-title">Full City Map View</span>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-outline" style="padding:5px 12px;font-size:12px;" id="toggleHeatmap">Toggle Heatmap</button>
+              <button class="btn btn-primary" style="padding:5px 12px;font-size:12px;" id="refreshMap">⟳ Refresh</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:12px;">
+            <div class="map-wrap" style="height:500px;">
+              <canvas id="mapCanvas2"></canvas>
+              <div class="map-overlay">
+                <div class="map-badge"><div class="badge-dot" style="background:var(--accent)"></div>Optimized</div>
+                <div class="map-badge"><div class="badge-dot" style="background:var(--red)"></div>Overload</div>
+                <div class="map-badge"><div class="badge-dot" style="background:var(--amber)"></div>In Progress</div>
+              </div>
+              <div class="map-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Completed zone</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Active vehicle</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>High-fill bin</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Depot</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metric-card"><div class="metric-label">Collection Points</div><div class="metric-value">128</div></div>
+          <div class="metric-card amber"><div class="metric-label">Active Vehicles</div><div class="metric-value">6</div></div>
+          <div class="metric-card blue"><div class="metric-label">Zones Covered</div><div class="metric-value">9/12</div></div>
+          <div class="metric-card red"><div class="metric-label">Overloaded Bins</div><div class="metric-value">7</div></div>
+        </div>
+      </div>
+
+      <!-- ── ROUTES ── -->
+      <div id="page-routes" class="page">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All Routes</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <select class="select-input" id="routeFilter">
+                <option value="all">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="active">Active</option>
+                <option value="scheduled">Scheduled</option>
+              </select>
+              <button class="btn btn-primary" style="padding:5px 14px;font-size:12px;" id="addRouteBtn">+ Add Route</button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="routes-table">
+              <thead><tr><th>Route ID</th><th>Zone</th><th>Vehicle</th><th>Stops</th><th>Distance</th><th>Status</th><th>Fill Avg</th><th>Saved</th><th>Actions</th></tr></thead>
+              <tbody id="fullRouteTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── OPTIMIZER ── -->
+      <div id="page-optimizer" class="page">
+        <div class="grid-3" style="align-items:start;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Optimization Configuration</span></div>
+            <div class="card-body">
+              <div class="opt-section">
+                <div class="opt-section-title">Algorithm Selection</div>
+                <div class="algo-pick" id="algoPick">
+                  <div class="algo-card sel" data-algo="QAOA"><div class="algo-name">QAOA</div><div class="algo-desc">Quantum Approximate Optimization — best for large graphs</div></div>
+                  <div class="algo-card" data-algo="VQE"><div class="algo-name">VQE</div><div class="algo-desc">Variational Quantum Eigensolver — high precision</div></div>
+                  <div class="algo-card" data-algo="SA"><div class="algo-name">Sim. Anneal</div><div class="algo-desc">Classical fallback — reliable baseline</div></div>
+                  <div class="algo-card" data-algo="Hybrid"><div class="algo-name">Hybrid</div><div class="algo-desc">Quantum + ML ensemble — adaptive</div></div>
+                </div>
+              </div>
+              <div class="opt-section">
+                <div class="opt-section-title">Constraints</div>
+                <div class="slider-row"><span class="slider-label">Max vehicles</span><input type="range" min="2" max="20" value="8" data-target="vehVal"><span class="slider-val" id="vehVal">8</span></div>
+                <div class="slider-row"><span class="slider-label">Max route (km)</span><input type="range" min="10" max="100" value="45" data-target="maxKmVal"><span class="slider-val" id="maxKmVal">45</span></div>
+                <div class="slider-row"><span class="slider-label">Bin threshold %</span><input type="range" min="50" max="100" value="75" data-target="binThreshVal"><span class="slider-val" id="binThreshVal">75</span></div>
+                <div class="slider-row"><span class="slider-label">Priority weight</span><input type="range" min="0" max="100" value="60" data-target="prioVal"><span class="slider-val" id="prioVal">60</span></div>
+              </div>
+              <div class="opt-section">
+                <div class="opt-section-title">Quantum Parameters</div>
+                <div class="slider-row"><span class="slider-label">Circuit depth (p)</span><input type="range" min="1" max="10" value="5" data-target="pVal"><span class="slider-val" id="pVal">5</span></div>
+                <div class="slider-row"><span class="slider-label">Iterations</span><input type="range" min="100" max="2000" value="1000" step="100" data-target="iterVal"><span class="slider-val" id="iterVal">1000</span></div>
+              </div>
+              <button class="run-btn" id="runBtn"><span>⚡</span><span id="runBtnText">Run Optimizer</span></button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="card">
+              <div class="card-header"><span class="card-title">Quantum State Visualization</span></div>
+              <div class="card-body">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Qubit activation matrix (8×8)</div>
+                <div class="q-matrix" id="qMatrix"></div>
+                <div style="margin-top:14px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted2);">
+                  <span>Entanglement: <span style="color:var(--accent)" id="entVal">72%</span></span>
+                  <span>Fidelity: <span style="color:var(--accent)" id="fidVal">98.1%</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Convergence Graph</span></div>
+              <div class="card-body" style="padding:12px 16px;"><div class="chart-wrap"><canvas id="convChart"></canvas></div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Optimization Results</span></div>
+              <div class="card-body">
+                <div class="mini-stat"><span class="mini-stat-label">Total Distance</span><span class="mini-stat-value" id="resTotalDist">142.6 km</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Previous Distance</span><span class="mini-stat-value" style="color:var(--red);text-decoration:line-through;">210.4 km</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Improvement</span><span class="mini-stat-value">−32.2%</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Vehicles Used</span><span class="mini-stat-value" id="resVehicles">8/12</span></div>
+                <div class="mini-stat"><span class="mini-stat-label">Estimated Time</span><span class="mini-stat-value" id="resTime">6h 24m</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANALYTICS ── -->
+      <div id="page-analytics" class="page">
+        <div class="metrics" style="margin-bottom:20px;">
+          <div class="metric-card"><div class="metric-label">Monthly Routes</div><div class="metric-value">348</div><div class="metric-delta up">↑ 12%</div></div>
+          <div class="metric-card amber"><div class="metric-label">Total Fuel Saved</div><div class="metric-value">8.2k<span style="font-size:16px"> L</span></div><div class="metric-delta up">↑ 24%</div></div>
+          <div class="metric-card blue"><div class="metric-label">CO&#8322; Avoided</div><div class="metric-value">21.4<span style="font-size:16px"> t</span></div><div class="metric-delta up">SDG 11 ✓</div></div>
+          <div class="metric-card red"><div class="metric-label">Citizen Complaints</div><div class="metric-value">14</div><div class="metric-delta up">↓ 67%</div></div>
+        </div>
+        <div class="analytics-grid">
+          <div class="card"><div class="card-header"><span class="card-title">Monthly Performance</span></div><div class="card-body" style="padding:12px 16px;"><div style="height:220px;position:relative;"><canvas id="monthChart"></canvas></div></div></div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Waste Type Distribution</span></div>
+            <div class="card-body">
+              <div class="donut-wrap">
+                <div style="position:relative;width:120px;height:120px;flex-shrink:0;"><canvas id="wasteDonut"></canvas></div>
+                <div class="donut-legend">
+                  <div class="donut-item"><div class="donut-swatch" style="background:#00c896"></div>Recyclable 34%</div>
+                  <div class="donut-item"><div class="donut-swatch" style="background:#0099ff"></div>Organic 28%</div>
+                  <div class="donut-item"><div class="donut-swatch" style="background:#f5a623"></div>General 24%</div>
+                  <div class="donut-item"><div class="donut-swatch" style="background:#9b59ff"></div>Hazardous 9%</div>
+                  <div class="donut-item"><div class="donut-swatch" style="background:#ff4757"></div>E-waste 5%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card"><div class="card-header"><span class="card-title">Route Efficiency Trend</span></div><div class="card-body" style="padding:12px 16px;"><div style="height:200px;position:relative;"><canvas id="trendChart"></canvas></div></div></div>
+          <div class="card"><div class="card-header"><span class="card-title">Zone Fill Levels</span></div><div class="card-body" style="padding:12px 16px;"><div style="height:200px;position:relative;"><canvas id="zoneChart"></canvas></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── VEHICLES ── -->
+      <div id="page-vehicles" class="page">
+        <div class="metrics" style="margin-bottom:20px;">
+          <div class="metric-card"><div class="metric-label">Total Fleet</div><div class="metric-value">12</div></div>
+          <div class="metric-card amber"><div class="metric-label">Active</div><div class="metric-value">6</div></div>
+          <div class="metric-card blue"><div class="metric-label">Available</div><div class="metric-value">4</div></div>
+          <div class="metric-card red"><div class="metric-label">Maintenance</div><div class="metric-value">2</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-header"><span class="card-title">Fleet Status</span></div><div class="card-body"><div class="vehicle-list" id="vehicleList"></div></div></div>
+          <div class="card"><div class="card-header"><span class="card-title">Fuel Consumption Trend</span></div><div class="card-body" style="padding:12px 16px;"><div style="height:260px;position:relative;"><canvas id="fuelChart"></canvas></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── ALERTS ── -->
+      <div id="page-alerts" class="page">
+        <div class="card">
+          <div class="card-header"><span class="card-title">System Alerts</span><button class="btn btn-danger" style="padding:5px 14px;font-size:12px;" id="clearAlertsBtn">Clear All</button></div>
+          <div class="card-body" style="padding:12px;"><div class="notif-list" id="fullAlertList"></div></div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<!-- ═══ ADD WASTE POINT MODAL ═══ -->
+<div id="addModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h2>Add Waste Collection Point</h2>
+    <p>Register a new bin location. It will be included in the next optimization cycle.</p>
+    <div class="field"><label>Location Name</label><input type="text" placeholder="e.g. Mysuru Market North Gate" id="wpName" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field"><label>Latitude</label><input type="number" placeholder="12.2958" id="wpLat" step="0.0001" /></div>
+      <div class="field"><label>Longitude</label><input type="number" placeholder="76.6394" id="wpLng" step="0.0001" /></div>
+    </div>
+    <div class="field"><label>Waste Type</label>
+      <select id="wpType" class="select-input"><option>General</option><option>Recyclable</option><option>Organic</option><option>Hazardous</option><option>E-waste</option></select>
+    </div>
+    <div class="field"><label>Bin Capacity (kg)</label><input type="number" placeholder="200" id="wpCap" /></div>
+    <div class="modal-row">
+      <button class="btn btn-outline" style="flex:1" id="cancelModal">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" id="submitWaste">Add Point</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/optimizer.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
